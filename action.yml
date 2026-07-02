@@ -32,6 +32,9 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Make script executable
       shell: bash
       run: chmod +x "${{ inputs.SCRIPT_PATH }}"
