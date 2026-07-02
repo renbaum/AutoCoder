@@ -25,6 +25,11 @@ jobs:
         run: |
           ./scripts/script.sh "$ISSUE_NUMBER" "$REPOSITORY" "$GITHUB_TOKEN" "$OPENAI_API_KEY"
 
+      - name: Ensure artifact folder exists
+        run: |
+          mkdir -p autocoder-bot
+          echo "Artifact test file" > autocoder-bot/test.txt
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
