@@ -2,7 +2,10 @@ name: AutoCoder
 
 on:
   issues:
-    types: [opened, reopened, labeled]
+    types:
+      - opened
+      - reopened
+      - labeled
 
 permissions:
   contents: write
@@ -18,28 +21,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Make script executable
-        run: chmod +x scripts/script.sh
-
-      - name: Run interaction script
-        run: |
-          ./scripts/script.sh "${{ secrets.GITHUB_TOKEN }}" "${{ github.repository }}" "${{ github.event.issue.number }}" "${{ secrets.OPENAI_API_KEY }}" || true
-          mkdir -p autocoder-bot
-          echo "Generated fallback file" > autocoder-bot/result.txt
-
-      - name: Commit files
-        run: |
-          git config user.name "autocoder-bot"
-          git config user.email "actions@github.com"
-          git add autocoder-bot
-          git commit -m "Generate code for issue #${{ github.event.issue.number }}" || echo "No changes to commit"
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+      - name: Interact with ChatGPT
+        uses: ./
         with:
-          branch: autocoder-branch-${{ github.event.issue.number }}
-          base: main
-          labels: autocoder-bot
-          title: "Autocoder generated code for issue #${{ github.event.issue.number }}"
-          committer: autocoder-bot <actions@github.com>
-          author: autocoder-bot <actions@github.com>
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SCRIPT_PATH: scripts/script.sh
+          LABEL: autocoder-bot
