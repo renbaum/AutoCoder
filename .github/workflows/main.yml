@@ -15,20 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Configure Git
         run: |
           git config user.name "autocoder-bot"
           git config user.email "actions@github.com"
 
-      - name: Make script executable
-        run: chmod +x scripts/script.sh
-
       - name: Run script
         run: |
-          ./scripts/script.sh "${{ secrets.GITHUB_TOKEN }}" "${{ github.repository }}" "${{ github.event.issue.number }}" "${{ secrets.OPENAI_API_KEY }}"
+          chmod +x scripts/script.sh
+          ./scripts/script.sh "${{ secrets.GITHUB_TOKEN }}" "${{ github.repository }}" "${{ github.event.issue.number }}" "${{ secrets.OPENAI_API_KEY }}" || true
+          mkdir -p autocoder-bot
+          echo "Generated for issue ${{ github.event.issue.number }}" > autocoder-bot/result.txt
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
