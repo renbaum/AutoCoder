@@ -2,10 +2,7 @@ name: AutoCoder
 
 on:
   issues:
-    types:
-      - opened
-      - reopened
-      - labeled
+    types: [opened, reopened, labeled]
 
 permissions:
   contents: write
