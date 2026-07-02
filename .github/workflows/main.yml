@@ -2,10 +2,7 @@ name: AutoCoder
 
 on:
   issues:
-    types:
-      - opened
-      - reopened
-      - labeled
+    types: [opened, reopened, labeled]
 
 permissions:
   contents: write
@@ -34,17 +31,7 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          ./scripts/script.sh \
-            "$GITHUB_TOKEN" \
-            "$REPOSITORY" \
-            "$ISSUE_NUMBER" \
-            "$OPENAI_API_KEY"
-
-      - name: Commit generated code
-        run: |
-          git add .
-          git commit -m "Generate code for issue #${{ github.event.issue.number }}" || echo "No changes to commit"
+        run: ./scripts/script.sh "$GITHUB_TOKEN" "$REPOSITORY" "$ISSUE_NUMBER" "$OPENAI_API_KEY"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
@@ -52,3 +39,4 @@ jobs:
           branch: autocoder-branch-${{ github.event.issue.number }}
           base: main
           labels: autocoder-bot
+          delete-branch: true
